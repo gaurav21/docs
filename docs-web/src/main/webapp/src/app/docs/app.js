@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Teedy application.
+ * specter-ai application.
  */
 angular.module('docs',
     // Dependencies

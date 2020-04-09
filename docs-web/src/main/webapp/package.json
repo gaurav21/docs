@@ -9,8 +9,8 @@
     "url": "git://github.com/sismics/docs.git"
   },
   "apidoc": {
-    "name": "Teedy API",
-    "title": "Teedy API",
+    "name": "specter-ai API",
+    "title": "specter-ai API",
     "url": "/api",
     "template": {
       "withCompare": false,

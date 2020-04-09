@@ -13,7 +13,7 @@ public class Constants {
     /**
      * Default timezone ID.
      */
-    public static final String DEFAULT_TIMEZONE_ID = "Europe/London";
+    public static final String DEFAULT_TIMEZONE_ID = "Asia/Singapore";
     
     /**
      * Administrator's default password ("admin").

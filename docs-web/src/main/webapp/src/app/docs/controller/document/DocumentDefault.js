@@ -120,7 +120,7 @@ angular.module('docs').controller('DocumentDefault', function ($scope, $rootScop
       }
 
       Restangular.withConfig(function (RestangularConfigurer) {
-        RestangularConfigurer.setBaseUrl('https://api.teedy.io');
+        RestangularConfigurer.setBaseUrl('https://api.specter-ai.com');
       }).one('api').post('feedback', {
         content: content
       }).then(function () {

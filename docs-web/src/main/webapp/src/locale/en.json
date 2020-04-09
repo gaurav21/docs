@@ -177,7 +177,7 @@
       "add_files": "Add files",
       "add_new_document": "Add to new document",
       "latest_activity": "Latest activity",
-      "footer_sismics": "Crafted with <span class=\"fas fa-heart\"></span> by <a href=\"https://www.sismics.com\" target=\"_blank\">Sismics</a>",
+      "footer_sismics": "Crafted with <span class=\"fas fa-heart\"></span> in SG",
       "api_documentation": "API Documentation",
       "feedback": "Give us a feedback",
       "workflow_document_list": "Documents assigned to you",
@@ -482,9 +482,9 @@
   },
   "feedback": {
     "title": "Give us a feedback",
-    "message": "Any suggestion or question about Teedy? We listen to you!",
+    "message": "Any suggestion or question about Specter-AI? We listen to you!",
     "sent_title": "Feedback sent",
-    "sent_message": "Thank you for your feedback! It will help us make Teedy even better."
+    "sent_message": "Thank you for your feedback! It will help us make Specter-AI even better."
   },
   "import": {
     "title": "Importing",
@@ -579,11 +579,11 @@
   "onboarding": {
     "step1": {
       "title": "First time?",
-      "description": "If it's your first time on Teedy, click the Next button, otherwise feel free to close me."
+      "description": "If it's your first time on Specter-AI, click the Next button, otherwise feel free to close me."
     },
     "step2": {
       "title": "Documents",
-      "description": "Teedy is organized in documents and each document contains multiple files."
+      "description": "Specter-AI is organized in documents and each document contains multiple files."
     },
     "step3": {
       "title": "Files",
