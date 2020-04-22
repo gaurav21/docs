@@ -156,7 +156,7 @@ public class OkHttpUtil {
     public static OkHttpClient buildClient(final Context context) {
         // One-time header computation
         if (userAgent == null) {
-            userAgent = "Teedy Android " + ApplicationUtil.getVersionName(context) + "/Android " + Build.VERSION.RELEASE + "/" + Build.MODEL;
+            userAgent = "specter-ai Android " + ApplicationUtil.getVersionName(context) + "/Android " + Build.VERSION.RELEASE + "/" + Build.MODEL;
         }
 
         if (acceptLanguage == null) {

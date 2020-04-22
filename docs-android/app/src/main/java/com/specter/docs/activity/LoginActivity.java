@@ -29,7 +29,7 @@ import org.json.JSONObject;
  * 
  * @author bgamard
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity exte nds AppCompatActivity {
     /**
      * User interface.
      */
