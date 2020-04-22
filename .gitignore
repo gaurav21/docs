@@ -14,3 +14,4 @@ import_test
 docs-importer-linux
 docs-importer-macos
 docs-importer-win.exe
+hibernate.properties

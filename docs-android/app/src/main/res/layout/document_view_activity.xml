@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.sismics.docs.ui.view.FileViewPager
+        <com.specter.docs.ui.view.FileViewPager
             android:id="@+id/fileViewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
@@ -649,7 +649,7 @@
                 android:text="@string/who_can_access"
                 android:layout_margin="12dp"/>
 
-            <com.sismics.docs.ui.view.NonScrollListView
+            <com.specter.docs.ui.view.NonScrollListView
                 android:id="@+id/aclListView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

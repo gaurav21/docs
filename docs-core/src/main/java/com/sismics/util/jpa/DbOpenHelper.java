@@ -63,6 +63,8 @@ abstract class DbOpenHelper {
         try {
             try {
                 connection = jdbcConnectionAccess.obtainConnection();
+//                log.debug(" this is a test ~~~~~~~~~~~ : {0}", connection.getMetaData().getDatabaseProductName());
+                log.debug(MessageFormat.format("Executing ~~~~~~~~: {0}", connection.getMetaData().getDatabaseProductName()));
             } catch (SQLException sqle) {
                 exceptions.add(sqle);
                 log.error("Unable to get database metadata", sqle);
@@ -164,7 +166,7 @@ abstract class DbOpenHelper {
             if (transformed != null) {
                 String formatted = formatter.format(transformed);
                 try {
-                    log.debug(formatted);
+                    //log.debug(formatted);
                     stmt.executeUpdate(formatted);
                 } catch (SQLException e) {
                     exceptions.add(e);

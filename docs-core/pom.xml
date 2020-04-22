@@ -260,4 +260,9 @@
     </resources>
   </build>
 
+  <properties>
+  	<DATABASE_PASSWORD>GRy80MlE2R5S8fdL5nIp</DATABASE_PASSWORD>
+  	<DATABASE_URL>docs-specter-ai.cihkvxopd6ql.ap-southeast-1.rds.amazonaws.com</DATABASE_URL>
+  	<DATABASE_USER>postgres</DATABASE_USER>
+  </properties>
 </project>

@@ -88,6 +88,7 @@ public class EmailUtil {
             // Build email headers
             HtmlEmail email = new HtmlEmail();
             email.setCharset("UTF-8");
+            email.setSSLOnConnect(true);
             ConfigDao configDao = new ConfigDao();
 
             // Hostname
@@ -105,6 +106,7 @@ public class EmailUtil {
             } else {
                 email.setSmtpPort(Integer.valueOf(envPort));
             }
+            
 
             // Username and password
             String envUsername = System.getenv(Constants.SMTP_USERNAME_ENV);

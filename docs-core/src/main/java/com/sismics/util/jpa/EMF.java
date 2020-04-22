@@ -78,6 +78,7 @@ public final class EMF {
         
         // Use environment parameters
         String databaseUrl = System.getenv("DATABASE_URL");
+        log.debug(databaseUrl);
         String databaseUsername = System.getenv("DATABASE_USER");
         String databasePassword = System.getenv("DATABASE_PASSWORD");
 
@@ -85,6 +86,7 @@ public final class EMF {
         Map<Object, Object> props = new HashMap<>();
         Path dbDirectory = DirectoryUtil.getDbDirectory();
         String dbFile = dbDirectory.resolve("docs").toAbsolutePath().toString();
+        
         if (databaseUrl == null) {
             props.put("hibernate.connection.driver_class", "org.h2.Driver");
             props.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");

@@ -39,7 +39,7 @@
             android:textSize="18sp"
             android:padding="16dp"/>
 
-        <com.sismics.docs.ui.view.DatePickerView
+        <com.specter.docs.ui.view.DatePickerView
             android:id="@+id/dateEditText"
             style="@android:style/Widget.DeviceDefault.Light.Spinner"
             android:layout_width="match_parent"
@@ -57,7 +57,7 @@
         android:layout_margin="8dp"
         android:padding="16dp"/>
 
-    <com.sismics.docs.ui.view.TagsCompleteTextView
+    <com.specter.docs.ui.view.TagsCompleteTextView
         android:id="@+id/tagsEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
