@@ -12,7 +12,7 @@
     <string name="app_name" translatable="false">specter-ai</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="login_explain"><![CDATA[To start, you must download and install specter-ai Server on <a href="https://github.com/sismics/docs">github.com/sismics/docs</a> and enter its below]]></string>
+    <string name="login_explain"><![CDATA[Sign-up for Specter-AI]]></string>
     <string name="server">Server</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
@@ -124,8 +124,8 @@
     <string name="export_metadata">Export metadata</string>
     <string name="mm">mm</string>
     <string name="download_file_title">specter-ai file export</string>
-    <string name="download_document_title">Teedy document export</string>
-    <string name="download_pdf_title">Teedy PDF export</string>
+    <string name="download_document_title">Specter-AI document export</string>
+    <string name="download_pdf_title">Specter-AI PDF export</string>
     <string name="latest_activity">Latest activity</string>
     <string name="activity">Activity</string>
     <string name="email">E-mail</string>

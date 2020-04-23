@@ -37,7 +37,7 @@
             android:summary="github.com/sismics/docs">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/sismics/docs"/>
+                android:data="https://github.com/gaurav21/docs" />
         </Preference>
 
         <Preference
@@ -46,7 +46,7 @@
             android:summary="github.com/sismics/docs/issues">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/sismics/docs/issues"/>
+                android:data="https://github.com/gaurav21/docs/issues" />
         </Preference>
 
         <Preference

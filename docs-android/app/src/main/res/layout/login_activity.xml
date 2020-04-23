@@ -3,41 +3,47 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="center"
+    android:background="#EAECED"
     android:gravity="center"
     android:orientation="vertical"
-    android:background="@color/colorPrimaryDark">
+    android:visibility="visible">
 
     <LinearLayout
         android:id="@+id/loginForm"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:visibility="visible"
+        android:orientation="vertical"
         android:padding="40dp"
-        android:orientation="vertical">
+        android:visibility="visible">
 
         <ImageView
-            android:contentDescription="@string/app_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="20dp"
+            android:contentDescription="@string/app_name"
+            android:src="@mipmap/ic_launcher" />
 
         <TextView
             android:id="@+id/loginExplain"
-            android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:gravity="center" />
 
         <EditText
             android:id="@+id/txtServer"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:editable="false"
             android:ems="10"
+            android:enabled="false"
             android:hint="@string/server"
-            android:inputType="textNoSuggestions">
-        </EditText>
+            android:inputType="textNoSuggestions"
+            android:text="https://docs.specter-ai.com"
+            android:visibility="visible"></EditText>
 
         <EditText
             android:id="@+id/txtUsername"
@@ -58,19 +64,17 @@
             android:layout_weight="0.5"
             android:ems="10"
             android:hint="@string/password"
-            android:inputType="textPassword">
-        </EditText>
+            android:inputType="textPassword"></EditText>
 
         <EditText
-            android:visibility="gone"
             android:id="@+id/txtValidationCode"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:ems="10"
             android:hint="@string/validation_code"
-            android:inputType="number">
-        </EditText>
+            android:inputType="number"
+            android:visibility="gone"></EditText>
 
         <Button
             android:id="@+id/btnConnect"

@@ -29,7 +29,7 @@ import org.json.JSONObject;
  * 
  * @author bgamard
  */
-public class LoginActivity exte nds AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     /**
      * User interface.
      */
@@ -60,7 +60,7 @@ public class LoginActivity exte nds AppCompatActivity {
         
         // Form validation
         final Validator validator = new Validator(this, false);
-        validator.addValidable(txtServer, new Required());
+        //validator.addValidable(txtServer);
         validator.addValidable(txtUsername, new Required());
         validator.addValidable(txtPassword, new Required());
         validator.setOnValidationChanged(new CallbackListener() {

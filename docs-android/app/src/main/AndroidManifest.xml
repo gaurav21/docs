@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sismics.docs"
+    package="com.specter.docs"
     android:installLocation="auto">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -75,7 +75,7 @@
             android:enabled="true"
             android:exported="false" >
             <intent-filter>
-                <action android:name="com.sismics.docs.file.upload"/>
+                <action android:name="com.specter.docs.file.upload"/>
             </intent-filter>
         </service>
     </application>
