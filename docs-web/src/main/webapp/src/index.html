@@ -20,7 +20,7 @@
     <!-- ref:remove -->
     <script>
       less = {
-        env: 'development', // or "production"
+        env: 'production', // or "production"
         async: false,       // load imports async
         fileAsync: false,   // load imports async when in a page under a file protocol
         poll: 1000,         // when in watch mode, time in ms between polls
@@ -137,9 +137,9 @@
           <li ui-sref-active="{ active: 'document.**' }">
             <a href="#/document"><span class="fas fa-book"></span> {{ 'index.nav_documents' | translate }}</a>
           </li>
-          <li ui-sref-active="{ active: 'document.**' }">
+<!--           <li ui-sref-active="{ active: 'document.**' }">
             <a href="#/case"><span class="fas fa-book"></span> {{ 'index.nav_case' | translate }}</a>
-          </li>
+          </li> -->
           <li ui-sref-active="{ active: 'tag.**' }" id="navigation-tag">
             <a href="#/tag"><span class="fas fa-tags"></span> {{ 'index.nav_tags' | translate }}</a>
           </li>
