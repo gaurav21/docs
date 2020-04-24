@@ -324,7 +324,7 @@ public class AppResource extends BaseResource {
         if (!authenticate()) {
             throw new ForbiddenClientException();
         }
-        checkBaseFunction(BaseFunction.ADMIN);
+       // checkBaseFunction(BaseFunction.ADMIN);
 
         ConfigDao configDao = new ConfigDao();
         Boolean enabled = ConfigUtil.getConfigBooleanValue(ConfigType.INBOX_ENABLED);
@@ -413,7 +413,7 @@ public class AppResource extends BaseResource {
         if (!authenticate()) {
             throw new ForbiddenClientException();
         }
-        checkBaseFunction(BaseFunction.ADMIN);
+       // checkBaseFunction(BaseFunction.ADMIN);
         ValidationUtil.validateRequired(enabled, "enabled");
         if (!Strings.isNullOrEmpty(portStr)) {
             ValidationUtil.validateInteger(portStr, "port");
@@ -460,7 +460,7 @@ public class AppResource extends BaseResource {
         if (!authenticate()) {
             throw new ForbiddenClientException();
         }
-        checkBaseFunction(BaseFunction.ADMIN);
+        //checkBaseFunction(BaseFunction.ADMIN);
 
         return Response.ok().entity(Json.createObjectBuilder()
                 .add("count", AppContext.getInstance().getInboxService().testInbox())

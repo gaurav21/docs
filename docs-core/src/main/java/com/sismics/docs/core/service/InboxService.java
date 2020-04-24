@@ -193,7 +193,14 @@ public class InboxService extends AbstractScheduledService {
         mailContent.setSubject(message.getSubject());
         mailContent.setDate(message.getSentDate());
         EmailUtil.parseMailContent(message, mailContent);
-
+        
+        //TODO
+        /*
+         * This is where we will add the functionality to only import mails with particular subject line 
+         * 
+         */
+        
+        
         // Create the document
         Document document = new Document();
         document.setUserId("admin");
@@ -213,6 +220,8 @@ public class InboxService extends AbstractScheduledService {
             document.setCreateDate(mailContent.getDate());
         }
 
+        
+        //TODO need to know which account is this email importer running on - use the email to find which user is this linkked with ? 
         // Save the document, create the base ACLs
         DocumentUtil.createDocument(document, "admin");
 
