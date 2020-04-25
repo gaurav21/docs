@@ -103,7 +103,13 @@ public class UserDao {
         userDb.setStorageCurrent(user.getStorageCurrent());
         userDb.setTotpKey(user.getTotpKey());
         userDb.setDisableDate(user.getDisableDate());
-
+        userDb.setInboxEnabled(user.getInboxEnabled());
+        userDb.setCompanyId(user.getCompanyId());
+        userDb.setInboxHostName(user.getInboxHostName());
+        userDb.setInboxPassword(user.getInboxPassword());
+        userDb.setInboxPort(user.getInboxPort());
+        user.setInboxUserName(user.getInboxUserName());
+        
         // Create audit log
         AuditLogUtil.create(userDb, AuditLogType.UPDATE, userId);
         
@@ -291,7 +297,7 @@ public class UserDao {
         Map<String, Object> parameterMap = new HashMap<>();
         List<String> criteriaList = new ArrayList<>();
         
-        StringBuilder sb = new StringBuilder("select u.USE_ID_C as c0, u.USE_USERNAME_C as c1, u.USE_EMAIL_C as c2, u.USE_CREATEDATE_D as c3, u.USE_STORAGECURRENT_N as c4, u.USE_STORAGEQUOTA_N as c5, u.USE_TOTPKEY_C as c6, u.USE_DISABLEDATE_D as c7");
+        StringBuilder sb = new StringBuilder("select u.USE_ID_C as c0, u.USE_USERNAME_C as c1, u.USE_EMAIL_C as c2, u.USE_CREATEDATE_D as c3, u.USE_STORAGECURRENT_N as c4, u.USE_STORAGEQUOTA_N as c5, u.USE_TOTPKEY_C as c6, u.USE_INBOXENABLED_B as c7, u.USE_INBOXUSERNAME_C as c8, u.USE_INBOXPASSWORD_C as c9, u.USE_INBOXPORT_C as c10, u.USE_INBOXHOSTNAME_C as c11, u.USE_TAGS_C as c12, u.USE_DISABLEDATE_D as c13");
         sb.append(" from T_USER u ");
         
         // Add search criterias
@@ -310,6 +316,11 @@ public class UserDao {
         if (criteria.getGroupId() != null) {
             sb.append(" join T_USER_GROUP ug on ug.UGP_IDUSER_C = u.USE_ID_C and ug.UGP_IDGROUP_C = :groupId and ug.UGP_DELETEDATE_D is null ");
             parameterMap.put("groupId", criteria.getGroupId());
+        }
+        
+        if (criteria.getInboxEnabled()) {
+        	criteriaList.add(" u.USE_INBOXENABLED_B = :inboxEnabled");
+        	parameterMap.put("inboxEnabled", true);
         }
         
         criteriaList.add("u.USE_DELETEDATE_D is null");
@@ -336,6 +347,12 @@ public class UserDao {
             userDto.setStorageCurrent(((Number) o[i++]).longValue());
             userDto.setStorageQuota(((Number) o[i++]).longValue());
             userDto.setTotpKey((String) o[i++]);
+            userDto.setInboxEnabled((Boolean) o[i++]);
+            userDto.setInboxUserName((String) o[i++]);
+            userDto.setInboxPassword((String) o[i++]);
+            userDto.setInboxPort((String) o[i++]);
+            userDto.setInboxHostName((String) o[i++]);
+            userDto.setTag((String) o[i++]);
             if (o[i] != null) {
                 userDto.setDisableTimestamp(((Timestamp) o[i]).getTime());
             }
@@ -369,4 +386,23 @@ public class UserDao {
         query.setParameter("toDate", toDate.toDate());
         return ((Number) query.getSingleResult()).longValue();
     }
+    
+    /**
+     * Gets an active user by its email.
+     * 
+     * @param username User's email
+     * @return User
+     */
+    public User getActiveByEmail(String email) {
+        EntityManager em = ThreadLocalContext.get().getEntityManager();
+        try {
+            Query q = em.createQuery("select u from User u where u.email = :email and u.deleteDate is null");
+            q.setParameter("email", email);
+            return (User) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+    
+    
 }

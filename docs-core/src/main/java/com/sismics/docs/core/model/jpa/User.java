@@ -94,8 +94,103 @@ public class User implements Loggable {
      */
     @Column(name = "USE_DISABLEDATE_D")
     private Date disableDate;
+    
+    /**
+     * Disable date.
+     */
+    @Column(name = "USE_INBOXENABLED_B")
+    private Boolean inboxEnabled;
+    /**
+     * Disable date.
+     */
+    @Column(name = "USE_INBOXUSERNAME_C")
+    private String inboxUserName;
+    
+    /**
+     * Disable date.
+     */
+    @Column(name = "USE_INBOXPASSWORD_C")
+    private String inboxPassword;
+    
+    /**
+     * Disable date.
+     */
+    @Column(name = "USE_INBOXPORT_C")
+    private String inboxPort;
+    
+    /**
+     * Disable date.
+     */
+    @Column(name = "USE_INBOXHOSTNAME_C")
+    private String inboxHostName;
+    
+    /**
+     * Disable date.
+     */
+    @Column(name = "USE_TAGS_C")
+    private String tag;
+    
+    
+    @Column(name = "USE_COMPANY_C")
+    private Integer companyId;
 
-    public String getId() {
+    public Integer getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(Integer companyId) {
+		this.companyId = companyId;
+	}
+
+	public Boolean getInboxEnabled() {
+		return inboxEnabled;
+	}
+
+	public void setInboxEnabled(Boolean inboxEnabled) {
+		this.inboxEnabled = inboxEnabled;
+	}
+
+	public String getInboxUserName() {
+		return inboxUserName;
+	}
+
+	public void setInboxUserName(String inboxUserName) {
+		this.inboxUserName = inboxUserName;
+	}
+
+	public String getInboxPassword() {
+		return inboxPassword;
+	}
+
+	public void setInboxPassword(String inboxPassword) {
+		this.inboxPassword = inboxPassword;
+	}
+
+	public String getInboxPort() {
+		return inboxPort;
+	}
+
+	public void setInboxPort(String inboxPort) {
+		this.inboxPort = inboxPort;
+	}
+
+	public String getInboxHostName() {
+		return inboxHostName;
+	}
+
+	public void setInboxHostName(String inboxHostName) {
+		this.inboxHostName = inboxHostName;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+	public String getId() {
         return id;
     }
 

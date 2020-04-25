@@ -7,6 +7,7 @@ import com.sismics.docs.core.dao.ConfigDao;
 import com.sismics.docs.core.dao.DocumentDao;
 import com.sismics.docs.core.dao.FileDao;
 import com.sismics.docs.core.dao.UserDao;
+import com.sismics.docs.core.dao.dto.UserDto;
 import com.sismics.docs.core.event.RebuildIndexAsyncEvent;
 import com.sismics.docs.core.model.context.AppContext;
 import com.sismics.docs.core.model.jpa.Config;
@@ -454,18 +455,19 @@ public class AppResource extends BaseResource {
      *
      * @return Response
      */
-    @POST
-    @Path("test_inbox")
-    public Response testInbox() {
-        if (!authenticate()) {
-            throw new ForbiddenClientException();
-        }
-        //checkBaseFunction(BaseFunction.ADMIN);
-
-        return Response.ok().entity(Json.createObjectBuilder()
-                .add("count", AppContext.getInstance().getInboxService().testInbox())
-                .build()).build();
-    }
+//    @POST
+//    @Path("test_inbox")
+//    public Response testInbox() {
+//        if (!authenticate()) {
+//            throw new ForbiddenClientException();
+//        }
+//        //checkBaseFunction(BaseFunction.ADMIN);
+//        UserDto user = new UserDto();
+//        
+//        return Response.ok().entity(Json.createObjectBuilder()
+//                .add("count", AppContext.getInstance().getInboxService().testInbox())
+//                .build()).build();
+//    }
 
     /**
      * Retrieve the application logs.

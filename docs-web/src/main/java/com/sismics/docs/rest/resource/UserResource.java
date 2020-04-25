@@ -15,6 +15,7 @@ import com.sismics.docs.core.event.FileDeletedAsyncEvent;
 import com.sismics.docs.core.event.PasswordLostEvent;
 import com.sismics.docs.core.model.context.AppContext;
 import com.sismics.docs.core.model.jpa.*;
+import com.sismics.docs.core.service.InboxService;
 import com.sismics.docs.core.util.ConfigUtil;
 import com.sismics.docs.core.util.RoutingUtil;
 import com.sismics.docs.core.util.authentication.AuthenticationUtil;
@@ -165,6 +166,7 @@ public class UserResource extends BaseResource {
             userDao.updatePassword(user, principal.getId());
         }
         
+        
         // Always return OK
         JsonObjectBuilder response = Json.createObjectBuilder()
                 .add("status", "ok");
@@ -201,7 +203,15 @@ public class UserResource extends BaseResource {
         @FormParam("password") String password,
         @FormParam("email") String email,
         @FormParam("storage_quota") String storageQuotaStr,
-        @FormParam("disabled") Boolean disabled) {
+        @FormParam("disabled") Boolean disabled,
+        @FormParam("inboxenabled") Boolean inboxEnabled,
+        @FormParam("inboxhostname") String inboxHostName,
+        @FormParam("inboxport") String inboxPortStr,
+        @FormParam("inboxusername") String inboxUserName,
+        @FormParam("inboxpassword") String inboxPassword,
+        @FormParam("inboxtag") String tag,
+        @FormParam("companyid") String companyId
+        ) {
         if (!authenticate()) {
             throw new ForbiddenClientException();
         }
@@ -241,6 +251,25 @@ public class UserResource extends BaseResource {
                 // Emptying the disabled date
                 user.setDisableDate(null);
             }
+        }
+        
+        if (inboxEnabled) {
+        	if (!Strings.isNullOrEmpty(inboxPortStr)) {
+                ValidationUtil.validateInteger(inboxPortStr, "port");
+            }
+        	user.setInboxEnabled(inboxEnabled);
+        	user.setInboxHostName(inboxHostName);
+        	user.setInboxPassword(inboxPassword);
+        	user.setInboxPort(inboxPortStr);
+        	user.setInboxUserName(inboxUserName);
+        	user.setTag(tag);
+        }
+        
+        if (companyId != null) {
+        	if (!Strings.isNullOrEmpty(companyId)) {
+                ValidationUtil.validateInteger(companyId, "companyId");
+            }
+        	user.setCompanyId(Integer.valueOf(companyId));
         }
         user = userDao.update(user, principal.getId());
         
@@ -1158,6 +1187,202 @@ public class UserResource extends BaseResource {
         JsonObjectBuilder response = Json.createObjectBuilder()
                 .add("status", "ok");
         return Response.ok().entity(response.build()).build();
+    }
+    
+    
+    /**
+     * Get the inbox configuration.
+     *
+     * @api {get} /app/config_inbox Get the inbox scanning configuration
+     * @apiName GetAppConfigInbox
+     * @apiGroup App
+     * @apiSuccess {Boolean} enabled True if the inbox scanning is enabled
+     * @apiSuccess {String} hostname IMAP hostname
+     * @apiSuccess {String} port IMAP port
+     * @apiSuccess {String} username IMAP username
+     * @apiSuccess {String} password IMAP password
+     * @apiSuccess {String} tag Tag for created documents
+     * @apiError (client) ForbiddenError Access denied
+     * @apiPermission admin
+     * @apiVersion 1.5.0
+     *
+     * @return Response
+     */
+    @GET
+    @Path("config_inbox")
+    public Response getConfigInbox() {
+        if (!authenticate()) {
+            throw new ForbiddenClientException();
+        }
+       // checkBaseFunction(BaseFunction.ADMIN);
+        UserDao userDao = new UserDao();
+        User user = userDao.getById(principal.getId());
+        Boolean enabled = user.getInboxEnabled();
+        String hostnameConfig = user.getInboxHostName();
+        String portConfig = user.getInboxPort();
+        String usernameConfig = user.getInboxUserName();
+        String passwordConfig = user.getInboxPassword();
+        String tagConfig = user.getTag();
+        
+        //ConfigDao configDao = new ConfigDao();
+//        Boolean enabled = ConfigUtil.getConfigBooleanValue(ConfigType.INBOX_ENABLED);
+//        Config hostnameConfig = configDao.getById(ConfigType.INBOX_HOSTNAME);
+//        Config portConfig = configDao.getById(ConfigType.INBOX_PORT);
+//        Config usernameConfig = configDao.getById(ConfigType.INBOX_USERNAME);
+//        Config passwordConfig = configDao.getById(ConfigType.INBOX_PASSWORD);
+//        Config tagConfig = configDao.getById(ConfigType.INBOX_TAG);
+        JsonObjectBuilder response = Json.createObjectBuilder();
+
+        response.add("enabled", enabled);
+        if (hostnameConfig == null) {
+            response.addNull("hostname");
+        } else {
+            response.add("hostname", hostnameConfig);
+        }
+        if (portConfig == null) {
+            response.addNull("port");
+        } else {
+            response.add("port", Integer.valueOf(portConfig));
+        }
+        if (usernameConfig == null) {
+            response.addNull("username");
+        } else {
+            response.add("username", usernameConfig);
+        }
+        if (passwordConfig == null) {
+            response.addNull("password");
+        } else {
+            response.add("password", passwordConfig);
+        }
+        if (tagConfig == null) {
+            response.addNull("tag");
+        } else {
+            response.add("tag", tagConfig);
+        }
+
+        // Informations about the last synchronization
+        InboxService inboxService = AppContext.getInstance().getInboxService();
+        JsonObjectBuilder lastSync = Json.createObjectBuilder();
+        if (inboxService.getLastSyncDate() == null) {
+            lastSync.addNull("date");
+        } else {
+            lastSync.add("date", inboxService.getLastSyncDate().getTime());
+        }
+        lastSync.add("error", JsonUtil.nullable(inboxService.getLastSyncError()));
+        lastSync.add("count", inboxService.getLastSyncMessageCount());
+        response.add("last_sync", lastSync);
+
+        return Response.ok().entity(response.build()).build();
+    }
+    
+    
+    /**
+     * Configure the inbox.
+     *
+     * @api {post} /app/config_inbox Configure the inbox scanning
+     * @apiName PostAppConfigInbox
+     * @apiGroup App
+     * @apiParam {Boolean} enabled True if the inbox scanning is enabled
+     * @apiParam {String} hostname IMAP hostname
+     * @apiParam {Integer} port IMAP port
+     * @apiParam {String} username IMAP username
+     * @apiParam {String} password IMAP password
+     * @apiParam {String} tag Tag for created documents
+     * @apiError (client) ForbiddenError Access denied
+     * @apiError (client) ValidationError Validation error
+     * @apiPermission admin
+     * @apiVersion 1.5.0
+     *
+     * @param enabled True if the inbox scanning is enabled
+     * @param hostname IMAP hostname
+     * @param portStr IMAP port
+     * @param username IMAP username
+     * @param password IMAP password
+     * @param tag Tag for created documents
+     * @return Response
+     */
+    @POST
+    @Path("config_inbox")
+    public Response configInbox(@FormParam("enabled") Boolean enabled,
+                                @FormParam("hostname") String hostname,
+                                @FormParam("port") String portStr,
+                                @FormParam("username") String username,
+                                @FormParam("password") String password,
+                                @FormParam("tag") String tag) {
+        if (!authenticate()) {
+            throw new ForbiddenClientException();
+        }
+        
+       
+       // checkBaseFunction(BaseFunction.ADMIN);
+        ValidationUtil.validateRequired(enabled, "enabled");
+        if (!Strings.isNullOrEmpty(portStr)) {
+            ValidationUtil.validateInteger(portStr, "port");
+        }
+
+        // Just update the changed configuration
+        // Update the user
+        UserDao userDao = new UserDao();
+        User user = userDao.getActiveByUsername(principal.getName());
+        user.setInboxEnabled(enabled);
+        if (!Strings.isNullOrEmpty(hostname)) {
+        	user.setInboxHostName(hostname);
+        }
+        if (!Strings.isNullOrEmpty(portStr)) {
+        	user.setInboxPort(portStr);
+        }
+        if (!Strings.isNullOrEmpty(username)) {
+        	user.setInboxUserName(username);
+        }
+        if (!Strings.isNullOrEmpty(password)) {
+        	user.setInboxPassword(password);
+        }
+        if (!Strings.isNullOrEmpty(tag)) {
+        	user.setTag(tag);
+        }
+        
+        user = userDao.update(user, principal.getId());
+
+        return Response.ok().build();
+    }
+    
+    /**
+     * Test the inbox.
+     *
+     * @api {post} /app/test_inbox Test the inbox scanning
+     * @apiName PostAppTestInbox
+     * @apiGroup App
+     * @apiSuccess {Number} Number of unread emails in the inbox
+     * @apiError (client) ForbiddenError Access denied
+     * @apiPermission admin
+     * @apiVersion 1.5.0
+     *
+     * @return Response
+     */
+    @POST
+    @Path("test_inbox")
+    public Response testInbox() {
+        if (!authenticate()) {
+            throw new ForbiddenClientException();
+        }
+        //checkBaseFunction(BaseFunction.ADMIN);
+        UserDao userDao = new UserDao();
+        User user = userDao.getActiveByUsername(principal.getName());
+        UserDto userDto = new UserDto();
+        if (user != null) {
+        	userDto.setInboxEnabled(user.getInboxEnabled());
+        	userDto.setInboxHostName(user.getInboxHostName());
+        	userDto.setInboxPassword(user.getInboxPassword());
+        	userDto.setInboxPort(user.getInboxPort());
+        	userDto.setInboxUserName(user.getInboxUserName());
+        	userDto.setTag(user.getTag());
+            return Response.ok().entity(Json.createObjectBuilder()
+                    .add("count", AppContext.getInstance().getInboxService().testInbox(userDto))
+                    .build()).build();
+        } else {
+        	 return Response.ok().entity(Json.createObjectBuilder()).build();
+        }
+
     }
 
     /**

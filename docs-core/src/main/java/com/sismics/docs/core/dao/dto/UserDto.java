@@ -47,6 +47,22 @@ public class UserDto {
      * TOTP key.
      */
     private String totpKey;
+    
+    
+    private Boolean inboxEnabled;
+
+    private String inboxUserName;
+
+	private String inboxPassword;
+    
+    private String inboxPort;
+    
+    private String inboxHostName;
+    
+    private String tag;
+    
+    private Integer companyId;
+
 
     public String getId() {
         return id;
@@ -112,6 +128,62 @@ public class UserDto {
     public void setTotpKey(String totpKey) {
         this.totpKey = totpKey;
     }
+    
+    public Boolean getInboxEnabled() {
+		return inboxEnabled;
+	}
+
+	public void setInboxEnabled(Boolean inboxEnabled) {
+		this.inboxEnabled = inboxEnabled;
+	}
+
+	public String getInboxUserName() {
+		return inboxUserName;
+	}
+
+	public void setInboxUserName(String inboxUserName) {
+		this.inboxUserName = inboxUserName;
+	}
+
+	public String getInboxPassword() {
+		return inboxPassword;
+	}
+
+	public void setInboxPassword(String inboxPassword) {
+		this.inboxPassword = inboxPassword;
+	}
+
+	public String getInboxPort() {
+		return inboxPort;
+	}
+
+	public void setInboxPort(String inboxPort) {
+		this.inboxPort = inboxPort;
+	}
+
+	public String getInboxHostName() {
+		return inboxHostName;
+	}
+
+	public void setInboxHostName(String inboxHostName) {
+		this.inboxHostName = inboxHostName;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+	public Integer getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(Integer companyId) {
+		this.companyId = companyId;
+	}
 
     @Override
     public String toString() {

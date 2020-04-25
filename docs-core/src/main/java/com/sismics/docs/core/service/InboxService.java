@@ -1,27 +1,41 @@
 package com.sismics.docs.core.service;
 
-import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.AbstractScheduledService;
-import com.sismics.docs.core.constant.ConfigType;
-import com.sismics.docs.core.dao.TagDao;
-import com.sismics.docs.core.event.DocumentCreatedAsyncEvent;
-import com.sismics.docs.core.model.jpa.Document;
-import com.sismics.docs.core.model.jpa.Tag;
-import com.sismics.docs.core.util.ConfigUtil;
-import com.sismics.docs.core.util.DocumentUtil;
-import com.sismics.docs.core.util.FileUtil;
-import com.sismics.docs.core.util.TransactionUtil;
-import com.sismics.util.EmailUtil;
-import com.sismics.util.context.ThreadLocalContext;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.FolderClosedException;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.search.FlagTerm;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.mail.*;
-import javax.mail.search.FlagTerm;
-import java.util.Date;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
+import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.AbstractScheduledService;
+import com.sismics.docs.core.constant.ConfigType;
+import com.sismics.docs.core.dao.TagDao;
+import com.sismics.docs.core.dao.UserDao;
+import com.sismics.docs.core.dao.criteria.UserCriteria;
+import com.sismics.docs.core.dao.dto.UserDto;
+import com.sismics.docs.core.event.DocumentCreatedAsyncEvent;
+import com.sismics.docs.core.model.jpa.Document;
+import com.sismics.docs.core.model.jpa.Tag;
+import com.sismics.docs.core.model.jpa.User;
+import com.sismics.docs.core.util.ConfigUtil;
+import com.sismics.docs.core.util.DocumentUtil;
+import com.sismics.docs.core.util.FileUtil;
+import com.sismics.docs.core.util.TransactionUtil;
+import com.sismics.docs.core.util.jpa.SortCriteria;
+import com.sismics.util.EmailUtil;
+import com.sismics.util.context.ThreadLocalContext;
 
 /**
  * Inbox scanning service.
@@ -57,50 +71,67 @@ public class InboxService extends AbstractScheduledService {
     @Override
     protected void runOneIteration() {
         try {
-            syncInbox();
+
+        	syncInbox();
+            
         } catch (Throwable e) {
             log.error("Exception during inbox synching", e);
         }
-    }
+    }  
 
     /**
      * Synchronize the inbox.
      */
     public void syncInbox() {
         TransactionUtil.handle(() -> {
-            Boolean enabled = ConfigUtil.getConfigBooleanValue(ConfigType.INBOX_ENABLED);
-            if (!enabled) {
-                return;
-            }
+        	UserDao users = new UserDao();
+        	UserCriteria criteria = new UserCriteria();
+        	criteria.setInboxEnabled(true);
+        	SortCriteria sort = new SortCriteria(0, true);
+        	List<UserDto> userDtos =  users.findByCriteria(criteria, sort);
+        	log.info("Total mails to be synced " + userDtos.size());
+        	for(Iterator<UserDto> userList = userDtos.iterator(); userList.hasNext();) {
+        		UserDto user = userList.next();
+        		if (user != null && !user.getInboxEnabled()) {
+        			return;
+        		} 
+//        		Boolean enabled = ConfigUtil.getConfigBooleanValue(ConfigType.INBOX_ENABLED);
+//                if (!enabled) {
+//                    return;
+//                }
 
-            log.info("Synchronizing IMAP inbox...");
-            Folder inbox = null;
-            lastSyncError = null;
-            lastSyncDate = new Date();
-            lastSyncMessageCount = 0;
-            try {
-                inbox = openInbox();
-                Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
-                log.info(messages.length + " messages found");
-                for (Message message : messages) {
-                    importMessage(message);
-                    lastSyncMessageCount++;
-                }
-            } catch (FolderClosedException e) {
-                // Ignore this, we will just continue importing on the next cycle
-            } catch (Exception e) {
-                log.error("Error synching the inbox", e);
-                lastSyncError = e.getMessage();
-            } finally {
+                log.info("Synchronizing IMAP inbox..." + user.getInboxUserName() + " ----- loggedin user " + user.getUsername());
+                Folder inbox = null;
+                lastSyncError = null;
+                lastSyncDate = new Date();
+                lastSyncMessageCount = 0;
                 try {
-                    if (inbox != null) {
-                        inbox.close(false);
-                        inbox.getStore().close();
+                    inbox = openInbox(user);
+                    Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+                    log.info(messages.length + " messages found");
+                    for (Message message : messages) {
+                        importMessage(message);
+                        lastSyncMessageCount++;
                     }
+                } catch (FolderClosedException e) {
+                    // Ignore this, we will just continue importing on the next cycle
                 } catch (Exception e) {
-                    // NOP
+                    log.error("Error synching the inbox", e);
+                    log.error("Erro syncing inbox for " + user.getInboxUserName() + " ~~~~ logged in user " + user.getUsername());
+                    lastSyncError = e.getMessage();
+                } finally {
+                    try {
+                        if (inbox != null) {
+                            inbox.close(false);
+                            inbox.getStore().close();
+                        }
+                    } catch (Exception e) {
+                        // NOP
+                    }
                 }
-            }
+        	}
+        	
+            
         });
     }
 
@@ -109,7 +140,7 @@ public class InboxService extends AbstractScheduledService {
      *
      * @return Number of messages currently in the remote inbox
      */
-    public int testInbox() {
+    public int testInbox(UserDto user) {
         Boolean enabled = ConfigUtil.getConfigBooleanValue(ConfigType.INBOX_ENABLED);
         if (!enabled) {
             return -1;
@@ -117,7 +148,7 @@ public class InboxService extends AbstractScheduledService {
 
         Folder inbox = null;
         try {
-            inbox = openInbox();
+            inbox = openInbox(user);
             return inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false)).length;
         } catch (Exception e) {
             log.error("Error testing inbox", e);
@@ -145,17 +176,18 @@ public class InboxService extends AbstractScheduledService {
      * @return Opened inbox folder
      * @throws Exception e
      */
-    private Folder openInbox() throws Exception {
+    private Folder openInbox(UserDto user) throws Exception {
         Properties properties = new Properties();
-        String port = ConfigUtil.getConfigStringValue(ConfigType.INBOX_PORT);
-        properties.put("mail.imap.host", ConfigUtil.getConfigStringValue(ConfigType.INBOX_HOSTNAME));
-        properties.put("mail.imap.port", port);
-        boolean isSsl = "993".equals(port);
+//        String port = ConfigUtil.getConfigStringValue(ConfigType.INBOX_PORT);
+//        properties.put("mail.imap.host", ConfigUtil.getConfigStringValue(ConfigType.INBOX_HOSTNAME));
+//        properties.put("mail.imap.port", port);
+        properties.put("mail.imap.host", user.getInboxHostName());
+        boolean isSsl = "993".equals(user.getInboxPort());
         properties.put("mail.imap.ssl.enable", String.valueOf(isSsl));
         properties.setProperty("mail.imap.socketFactory.class",
                 isSsl ? "javax.net.ssl.SSLSocketFactory" : "javax.net.DefaultSocketFactory");
         properties.setProperty("mail.imap.socketFactory.fallback", "true");
-        properties.setProperty("mail.imap.socketFactory.port", port);
+        properties.setProperty("mail.imap.socketFactory.port", user.getInboxPort());
         properties.setProperty("mail.imaps.auth", "true");
         //properties.setProperty("mail.debug", "true");
         if (isSsl) {
@@ -171,8 +203,10 @@ public class InboxService extends AbstractScheduledService {
         Session session = Session.getInstance(properties);
 
         Store store = session.getStore("imap");
-        store.connect(ConfigUtil.getConfigStringValue(ConfigType.INBOX_USERNAME),
-                ConfigUtil.getConfigStringValue(ConfigType.INBOX_PASSWORD));
+//        store.connect(ConfigUtil.getConfigStringValue(ConfigType.INBOX_USERNAME),
+//                ConfigUtil.getConfigStringValue(ConfigType.INBOX_PASSWORD));
+        
+        store.connect(user.getInboxUserName(), user.getInboxPassword());
 
         Folder inbox = store.getFolder("INBOX");
         inbox.open(Folder.READ_WRITE);
@@ -203,7 +237,18 @@ public class InboxService extends AbstractScheduledService {
         
         // Create the document
         Document document = new Document();
-        document.setUserId("admin");
+        
+        //fetch the user with the email linked to this account
+        UserDao userDao = new UserDao();
+        User user = userDao.getActiveByEmail(ConfigUtil.getConfigStringValue(ConfigType.INBOX_USERNAME));
+        if (user != null) {
+        	document.setUserId(user.getId());
+        } else {
+        	document.setUserId("admin");
+        }
+        
+        
+        
         if (mailContent.getSubject() == null) {
             document.setTitle("Imported email from EML file");
         } else {
@@ -223,7 +268,12 @@ public class InboxService extends AbstractScheduledService {
         
         //TODO need to know which account is this email importer running on - use the email to find which user is this linkked with ? 
         // Save the document, create the base ACLs
-        DocumentUtil.createDocument(document, "admin");
+        if (user != null) {
+        	DocumentUtil.createDocument(document, user.getId());
+        } else {
+        	DocumentUtil.createDocument(document, "admin");
+        }
+        
 
         // Add the tag
         String tagId = ConfigUtil.getConfigStringValue(ConfigType.INBOX_TAG);

@@ -25,10 +25,10 @@ public class UserCriteria {
      * Username.
      */
     private String userName;
+    
+    private Integer companyId;
 
-    public String getSearch() {
-        return search;
-    }
+    private Boolean inboxEnabled;
 
     public UserCriteria setSearch(String search) {
         this.search = search;
@@ -61,4 +61,24 @@ public class UserCriteria {
         this.userName = userName;
         return this;
     }
+    
+    public Integer getCompanyId() {
+		return companyId;
+	}
+
+	public String getSearch() {
+        return search;
+    }
+
+	public Boolean getInboxEnabled() {
+		return inboxEnabled;
+	}
+
+	public void setInboxEnabled(Boolean inboxEnabled) {
+		this.inboxEnabled = inboxEnabled;
+	}
+
+	public void setCompanyId(Integer companyId) {
+		this.companyId = companyId;
+	}
 }
