@@ -10,9 +10,13 @@ import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.FolderClosedException;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.search.AndTerm;
 import javax.mail.search.FlagTerm;
+import javax.mail.search.SearchTerm;
+import javax.mail.search.SubjectTerm;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -23,11 +27,12 @@ import com.google.common.util.concurrent.AbstractScheduledService;
 import com.sismics.docs.core.constant.ConfigType;
 import com.sismics.docs.core.dao.TagDao;
 import com.sismics.docs.core.dao.UserDao;
+import com.sismics.docs.core.dao.criteria.TagCriteria;
 import com.sismics.docs.core.dao.criteria.UserCriteria;
+import com.sismics.docs.core.dao.dto.TagDto;
 import com.sismics.docs.core.dao.dto.UserDto;
 import com.sismics.docs.core.event.DocumentCreatedAsyncEvent;
 import com.sismics.docs.core.model.jpa.Document;
-import com.sismics.docs.core.model.jpa.Tag;
 import com.sismics.docs.core.model.jpa.User;
 import com.sismics.docs.core.util.ConfigUtil;
 import com.sismics.docs.core.util.DocumentUtil;
@@ -100,19 +105,42 @@ public class InboxService extends AbstractScheduledService {
 //                    return;
 //                }
 
-                log.info("Synchronizing IMAP inbox..." + user.getInboxUserName() + " ----- loggedin user " + user.getUsername());
+                log.info("Synchronizing IMAP inbox..." + user.getInboxUserName() + " ----- loggedin user " + user.getUsername() + " tag " + user.getTag());
                 Folder inbox = null;
                 lastSyncError = null;
                 lastSyncDate = new Date();
                 lastSyncMessageCount = 0;
                 try {
                     inbox = openInbox(user);
-                    Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
-                    log.info(messages.length + " messages found");
-                    for (Message message : messages) {
-                        importMessage(message);
-                        lastSyncMessageCount++;
+                    // we need to check on whether we need to only find the messages who check our criteria
+                    if (user.getTag() != null) {
+                    	String[] tags = user.getTag().split("~~");
+                    	for (String tag : tags) {
+                    		String[] subject  = tag.split("~");
+                    		log.info("search for " + subject[0]);
+                    		FlagTerm term = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+    						SearchTerm search = new AndTerm(new SubjectTerm(subject[0]), term);
+    						Message[] messages = inbox.search(search);
+		                    log.info(messages.length + " messages found tag - " + subject[0] + '~' + subject[1]);
+		                    for (Message message : messages) {
+		                    	if (StringUtils.lowerCase(message.getSubject()).contains(StringUtils.lowerCase(subject[0]))) {
+			                        importMessage(message, subject[1]);
+			                        lastSyncMessageCount++;
+		                    	}
+		                    }
+                    	}              	
+                    } else {
+                    	 Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+                         log.info(messages.length + " messages found");
+                         for (Message message : messages) {
+                             importMessage(message, null);
+                             lastSyncMessageCount++;
+                         }
                     }
+                    
+                    
+                    
+                   
                 } catch (FolderClosedException e) {
                     // Ignore this, we will just continue importing on the next cycle
                 } catch (Exception e) {
@@ -219,7 +247,7 @@ public class InboxService extends AbstractScheduledService {
      * @param message Message
      * @throws Exception e
      */
-    private void importMessage(Message message) throws Exception {
+    private void importMessage(Message message, String tagName) throws Exception {
         log.info("Importing message: " + message.getSubject());
 
         // Parse the mail
@@ -276,13 +304,23 @@ public class InboxService extends AbstractScheduledService {
         
 
         // Add the tag
-        String tagId = ConfigUtil.getConfigStringValue(ConfigType.INBOX_TAG);
-        if (tagId != null) {
+       // String tagId = ConfigUtil.getConfigStringValue(ConfigType.INBOX_TAG);
+        
+        if (tagName != null) {
             TagDao tagDao = new TagDao();
-            Tag tag = tagDao.getById(tagId);
-            if (tag != null) {
-                tagDao.updateTagList(document.getId(), Sets.newHashSet(tagId));
+            TagCriteria criteria = new TagCriteria();
+            criteria.setTagName(tagName);
+            List<TagDto> tags = tagDao.findByCriteria(criteria, new SortCriteria(0, true));
+            if (!tags.isEmpty()) {
+            	//TODO only checking the first element in the list 
+            	TagDto tag = tags.get(0);
+            	if (tag != null) {
+                    tagDao.updateTagList(document.getId(), Sets.newHashSet(tag.getId()));
+                }
             }
+            
+            
+            
         }
 
         // Raise a document created event

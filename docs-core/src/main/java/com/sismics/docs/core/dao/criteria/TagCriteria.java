@@ -22,8 +22,18 @@ public class TagCriteria {
      * Document ID.
      */
     private String documentId;
+    
+    private String tagName;
 
-    public String getId() {
+    public String getTagName() {
+		return tagName;
+	}
+
+	public void setTagName(String tagName) {
+		this.tagName = tagName;
+	}
+
+	public String getId() {
         return id;
     }
 
