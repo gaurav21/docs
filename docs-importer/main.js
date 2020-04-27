@@ -22,9 +22,9 @@ const prefs = new preferences('com.sismics.docs.importer',{
 });
 
 // Welcome message
-console.log('Teedy Importer 1.0.0, https://teedy.io' +
+console.log('Specter AI Importer 1.0.0, https://www.specter-ai.com' +
   '\n\n' +
-  'This program let you import files from your system to Teedy' +
+  'This program let you import files from your system to Specter AI' +
   '\n');
 
 // Ask for the base URL
@@ -33,8 +33,8 @@ const askBaseUrl = () => {
     {
       type: 'input',
       name: 'baseUrl',
-      message: 'What is the base URL of your Teedy? (eg. https://teedy.mycompany.com)',
-      default: prefs.importer.baseUrl
+      message: 'What is the base URL of your SpecterAI? (eg. https://docs.specter-ai.com)',
+      default: 'https://docs.specter-ai.com'
     }
   ]).then(answers => {
     // Save base URL
@@ -42,12 +42,12 @@ const askBaseUrl = () => {
 
     // Test base URL
     const spinner = ora({
-      text: 'Checking connection to Teedy',
+      text: 'Checking connection to Specter AI',
       spinner: 'flips'
     }).start();
     request(answers.baseUrl + '/api/app', function (error, response) {
       if (!response || response.statusCode !== 200) {
-        spinner.fail('Connection to Teedy failed: ' + error);
+        spinner.fail('Connection to Specter AI failed: ' + error);
         askBaseUrl();
         return;
       }
@@ -82,7 +82,7 @@ const askCredentials = () => {
 
     // Test credentials
     const spinner = ora({
-      text: 'Checking connection to Teedy',
+      text: 'Checking connection to Specter AI',
       spinner: 'flips'
     }).start();
     request.post({

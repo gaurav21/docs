@@ -318,7 +318,7 @@ public class UserDao {
             parameterMap.put("groupId", criteria.getGroupId());
         }
         
-        if (criteria.getInboxEnabled()) {
+        if (criteria.getInboxEnabled() != null && criteria.getInboxEnabled()) {
         	criteriaList.add(" u.USE_INBOXENABLED_B = :inboxEnabled");
         	parameterMap.put("inboxEnabled", true);
         }
