@@ -7,13 +7,14 @@ angular.module('docs').controller('UserGroup', function(Restangular, $scope, $st
   // Load users
   Restangular.one('user/list').get({
     sort_column: 1,
-    asc: true
+    asc: true,
+    isUserGroup:true
   }).then(function(data) {
     $scope.users = data.users;
   });
 
   // Load groups
-  Restangular.one('group').get({
+  Restangular.one('group/listlimit').get({
     sort_column: 1,
     asc: true
   }).then(function(data) {

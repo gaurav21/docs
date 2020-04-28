@@ -444,4 +444,49 @@ public class GroupResource extends BaseResource {
         
         return Response.ok().entity(response.build()).build();
     }
+    
+    /**
+     * Returns all active groups.
+     *
+     * @api {get} /group/listlimit Get groups
+     * @apiName GetGroupList
+     * @apiGroup Group
+     * @apiParam {Number} sort_column Column index to sort on
+     * @apiParam {Boolean} asc If true, sort in ascending order
+     * @apiSuccess {Object[]} groups List of groups
+     * @apiSuccess {String} groups.name Name
+     * @apiSuccess {String} groups.parent Parent name
+     * @apiError (client) ForbiddenError Access denied
+     * @apiPermission user
+     * @apiVersion 1.5.0
+     *
+     * @param sortColumn Sort index
+     * @param asc If true, ascending sorting, else descending
+     * @return Response
+     */
+    @GET
+    @Path("listlimit")
+    public Response listLimited(
+            @QueryParam("sort_column") Integer sortColumn,
+            @QueryParam("asc") Boolean asc) {
+        if (!authenticate()) {
+            throw new ForbiddenClientException();
+        }
+        
+        JsonArrayBuilder groups = Json.createArrayBuilder();
+        SortCriteria sortCriteria = new SortCriteria(sortColumn, asc);
+        GroupCriteria gCriteria = new GroupCriteria();
+        gCriteria.setUserId(principal.getId());
+        GroupDao groupDao = new GroupDao();
+        List<GroupDto> groupDtoList = groupDao.findByCriteria(gCriteria, sortCriteria);
+        for (GroupDto groupDto : groupDtoList) {
+            groups.add(Json.createObjectBuilder()
+                    .add("name", groupDto.getName())
+                    .add("parent", JsonUtil.nullable(groupDto.getParentName())));
+        }
+        
+        JsonObjectBuilder response = Json.createObjectBuilder()
+                .add("groups", groups);
+        return Response.ok().entity(response.build()).build();
+    }
 }

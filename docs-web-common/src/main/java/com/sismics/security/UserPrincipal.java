@@ -41,7 +41,14 @@ public class UserPrincipal implements IPrincipal {
      */
     private Set<String> groupIdSet;
     
+    
     /**
+     * Company the user belongs to
+     */
+    private String company;
+    
+
+	/**
      * Constructor of UserPrincipal.
      * 
      * @param id ID of the user
@@ -114,4 +121,13 @@ public class UserPrincipal implements IPrincipal {
     public boolean isGuest() {
         return Constants.GUEST_USER_ID.equals(id);
     }
+
+	@Override
+	public String getCompany() {
+		return company;
+	}
+	
+	public void setCompany(String company) {
+		this.company = company;
+	}
 }

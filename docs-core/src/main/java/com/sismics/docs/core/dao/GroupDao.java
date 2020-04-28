@@ -188,7 +188,6 @@ public class GroupDao {
             sb.append(" where ");
             sb.append(Joiner.on(" and ").join(criteriaList));
         }
-        
         // Perform the search
         QueryParam queryParam = QueryUtil.getSortedQueryParam(new QueryParam(sb.toString(), parameterMap), sortCriteria);
         @SuppressWarnings("unchecked")

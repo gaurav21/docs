@@ -2,4 +2,10 @@ create cached table T_METADATA ( MET_ID_C varchar(36) not null, MET_NAME_C varch
 create cached table T_DOCUMENT_METADATA ( DME_ID_C varchar(36) not null, DME_IDDOCUMENT_C varchar(36) not null, DME_IDMETADATA_C varchar(36) not null, DME_VALUE_C varchar(4000) null, primary key (DME_ID_C) );
 alter table T_DOCUMENT_METADATA add constraint FK_DME_IDDOCUMENT_C foreign key (DME_IDDOCUMENT_C) references T_DOCUMENT (DOC_ID_C) on delete restrict on update restrict;
 alter table T_DOCUMENT_METADATA add constraint FK_DME_IDMETADATA_C foreign key (DME_IDMETADATA_C) references T_METADATA (MET_ID_C) on delete restrict on update restrict;
+alter table T_USER add column USE_INBOXENABLED_B bit default 0;
+alter table T_USER add column USE_INBOXUSERNAME_C varchar(50);
+alter table T_USER add column USE_INBOXPASSWORD_C varchar(60);
+alter table T_USER add column USE_INBOXPORT_C varchar(4);
+alter table T_USER add column USE_INBOXHOSTNAME_C varchar(50);
+alter table T_USER add column USE_TAGS_C varchar(1000);
 update T_CONFIG set CFG_VALUE_C = '24' where CFG_ID_C = 'DB_VERSION';

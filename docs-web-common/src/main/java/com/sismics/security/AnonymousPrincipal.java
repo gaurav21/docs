@@ -63,4 +63,10 @@ public class AnonymousPrincipal implements IPrincipal {
     public boolean isGuest() {
         return false;
     }
+
+	@Override
+	public String getCompany() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -130,8 +130,30 @@ public class User implements Loggable {
     @Column(name = "USE_TAGS_C")
     private String tag;
     
+    @Column(name = "USE_TELEGRAMUSERNAME_C")
+    private String telegramUserName;
     
-    @Column(name = "USE_COMPANY_C")
+    @Column(name = "USE_TELEGRAMCHATID_C")
+    private String telegramChatId;
+    
+    
+    public String getTelegramUserName() {
+		return telegramUserName;
+	}
+
+	public void setTelegramUserName(String telegramUserName) {
+		this.telegramUserName = telegramUserName;
+	}
+
+	public String getTelegramChatId() {
+		return telegramChatId;
+	}
+
+	public void setTelegramChatId(String telegramChatId) {
+		this.telegramChatId = telegramChatId;
+	}
+
+	@Column(name = "USE_COMPANY_C")
     private Integer companyId;
 
     public Integer getCompanyId() {

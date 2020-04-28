@@ -10,6 +10,10 @@ import org.joda.time.DateTimeZone;
  * 
  * @author jtremeaux
  */
+/**
+ * @author gaurav
+ *
+ */
 public interface IPrincipal extends Principal {
     /**
      * Checks if the principal is anonymous.
@@ -53,4 +57,11 @@ public interface IPrincipal extends Principal {
      * @return Email of the principal
      */
     public String getEmail();
+    
+    
+    /**
+     * Returns the companyid the principal belongs
+     * @return companyid of the principal
+     */
+    public String getCompany();
 }

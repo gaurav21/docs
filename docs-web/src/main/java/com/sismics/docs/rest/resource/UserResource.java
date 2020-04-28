@@ -41,6 +41,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -808,7 +810,8 @@ public class UserResource extends BaseResource {
     public Response list(
             @QueryParam("sort_column") Integer sortColumn,
             @QueryParam("asc") Boolean asc,
-            @QueryParam("group") String groupName) {
+            @QueryParam("group") String groupName,
+            @QueryParam("isUserGroup") Boolean isUserGroup) {
         if (!authenticate()) {
             throw new ForbiddenClientException();
         }
@@ -825,9 +828,22 @@ public class UserResource extends BaseResource {
                 groupId = group.getId();
             }
         }
+        UserCriteria uCriteria = new UserCriteria();
+        if (isUserGroup != null && isUserGroup) {
+        	GroupCriteria gCriteria = new GroupCriteria();
+            gCriteria.setUserId(principal.getId());
+            GroupDao groupDao = new GroupDao();
+            List<GroupDto> groupDtoList = groupDao.findByCriteria(gCriteria, sortCriteria);
+            List<String> groupIds = new ArrayList<String>();
+            for (GroupDto groupDto : groupDtoList) {
+            	groupIds.add(groupDto.getId());
+            }
+            uCriteria.setGroupIds(groupIds);
+        }
+        
         
         UserDao userDao = new UserDao();
-        List<UserDto> userDtoList = userDao.findByCriteria(new UserCriteria().setGroupId(groupId), sortCriteria);
+        List<UserDto> userDtoList = userDao.findByCriteria(uCriteria, sortCriteria);
         for (UserDto userDto : userDtoList) {
             users.add(Json.createObjectBuilder()
                     .add("id", userDto.getId())

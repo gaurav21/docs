@@ -1,5 +1,7 @@
 package com.sismics.docs.core.dao.criteria;
 
+import java.util.List;
+
 /**
  * User criteria.
  *
@@ -29,8 +31,18 @@ public class UserCriteria {
     private Integer companyId;
 
     private Boolean inboxEnabled;
+    
+    private List<String> groupIds;
+ 
+    public List<String> getGroupIds() {
+		return groupIds;
+	}
 
-    public UserCriteria setSearch(String search) {
+	public void setGroupIds(List<String> groupIds) {
+		this.groupIds = groupIds;
+	}
+
+	public UserCriteria setSearch(String search) {
         this.search = search;
         return this;
     }

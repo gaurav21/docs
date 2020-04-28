@@ -74,6 +74,9 @@ public class UserDao {
         user.setPassword(hashPassword(user.getPassword()));
         user.setPrivateKey(EncryptionUtil.generatePrivateKey());
         user.setStorageCurrent(0L);
+        if (user.getCompanyId() == null) {
+        	//user.setCompanyId();
+        }
         em.persist(user);
         
         // Create audit log
@@ -297,7 +300,7 @@ public class UserDao {
         Map<String, Object> parameterMap = new HashMap<>();
         List<String> criteriaList = new ArrayList<>();
         
-        StringBuilder sb = new StringBuilder("select u.USE_ID_C as c0, u.USE_USERNAME_C as c1, u.USE_EMAIL_C as c2, u.USE_CREATEDATE_D as c3, u.USE_STORAGECURRENT_N as c4, u.USE_STORAGEQUOTA_N as c5, u.USE_TOTPKEY_C as c6, u.USE_INBOXENABLED_B as c7, u.USE_INBOXUSERNAME_C as c8, u.USE_INBOXPASSWORD_C as c9, u.USE_INBOXPORT_C as c10, u.USE_INBOXHOSTNAME_C as c11, u.USE_TAGS_C as c12, u.USE_DISABLEDATE_D as c13");
+        StringBuilder sb = new StringBuilder("select distinct u.USE_ID_C as c0, u.USE_USERNAME_C as c1, u.USE_EMAIL_C as c2, u.USE_CREATEDATE_D as c3, u.USE_STORAGECURRENT_N as c4, u.USE_STORAGEQUOTA_N as c5, u.USE_TOTPKEY_C as c6, u.USE_INBOXENABLED_B as c7, u.USE_INBOXUSERNAME_C as c8, u.USE_INBOXPASSWORD_C as c9, u.USE_INBOXPORT_C as c10, u.USE_INBOXHOSTNAME_C as c11, u.USE_TAGS_C as c12, u.USE_DISABLEDATE_D as c13");
         sb.append(" from T_USER u ");
         
         // Add search criterias
@@ -316,6 +319,11 @@ public class UserDao {
         if (criteria.getGroupId() != null) {
             sb.append(" join T_USER_GROUP ug on ug.UGP_IDUSER_C = u.USE_ID_C and ug.UGP_IDGROUP_C = :groupId and ug.UGP_DELETEDATE_D is null ");
             parameterMap.put("groupId", criteria.getGroupId());
+        }
+        
+        if (criteria.getGroupIds() != null) {
+        	sb.append(" join T_USER_GROUP ug on ug.UGP_IDUSER_C = u.USE_ID_C and ug.UGP_IDGROUP_C in :groupIds and ug.UGP_DELETEDATE_D is null ");
+            parameterMap.put("groupIds", criteria.getGroupIds());
         }
         
         if (criteria.getInboxEnabled() != null && criteria.getInboxEnabled()) {
