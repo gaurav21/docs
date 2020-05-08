@@ -211,6 +211,25 @@ const askDaemon = () => {
   });
 };
 
+const askFolderToBeUsedAsDocumentTitle = () => {
+	console.log('');
+	inquirer.prompt([
+	    {
+	      type: 'confirm',
+	      name: 'daemon',
+	      message: 'Do you want to run the importer such that all files under 1 folder is merged?',
+	      default: prefs.importer.mergeFolderToDocument === true
+	    }
+	  ]).then(answers => {
+	    // Save daemon
+	    prefs.importer.mergeFolderToDocument = answers.mergeFolderToDocument;
+
+	    // Save all preferences in case the program is sig-killed
+	    prefs.save();
+
+	    start();
+	  });
+}
 // Start the importer
 const start = () => {
   request.post({
@@ -244,6 +263,8 @@ const start = () => {
 
 // Import the files
 const importFiles = (remove, filesImported) => {
+  	
+ 	
   recursive(prefs.importer.path, function (error, files) {
     if (files.length === 0) {
       filesImported();
@@ -269,11 +290,16 @@ const importFile = (file, remove, resolve) => {
     text: 'Importing: ' + file,
     spinner: 'flips'
   }).start();
-
+  
+  let fileName = file.replace(prefs.importer.baseUrl, '');
+  
+  
+  //if a folder then first check if document name exists ? if yes then 
+  
   request.put({
     url: prefs.importer.baseUrl + '/api/document',
     form: {
-      title: file.replace(/^.*[\\\/]/, ''),
+      title: fileName.replace(/^.*[\\\/]/, '_'),
       language: 'eng',
       tags: prefs.importer.tag === '' ? undefined : prefs.importer.tag
     }
@@ -298,7 +324,7 @@ const importFile = (file, remove, resolve) => {
       }
       spinner.succeed('Upload successful for ' + file);
       if (remove) {
-        fs.unlinkSync(file);
+        //fs.unlinkSync(file);
       }
       resolve();
     });

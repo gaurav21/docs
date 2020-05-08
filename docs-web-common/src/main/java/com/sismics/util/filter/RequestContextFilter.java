@@ -6,6 +6,9 @@ import com.sismics.docs.core.util.TransactionUtil;
 import com.sismics.util.EnvironmentUtil;
 import com.sismics.util.context.ThreadLocalContext;
 import com.sismics.util.jpa.EMF;
+
+import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
@@ -134,6 +137,8 @@ public class RequestContextFilter implements Filter {
             }
         }
 
+        OpenApiResource openApiResource = new OpenApiResource();
+        context.setOpenApiResource(openApiResource);
         // Fire all pending async events after request transaction commit.
         // This way, all modifications done during this request are available in the listeners.
         context.fireAllAsyncEvents();

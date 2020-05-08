@@ -3,6 +3,8 @@ package com.sismics.util.context;
 import com.google.common.collect.Lists;
 import com.sismics.docs.core.model.context.AppContext;
 
+import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
+
 import javax.persistence.EntityManager;
 import java.util.Iterator;
 import java.util.List;
@@ -22,8 +24,14 @@ public class ThreadLocalContext {
      * Entity manager.
      */
     private EntityManager entityManager;
-
+    
     /**
+     * Open API - Swagger Config
+     */
+    private OpenApiResource openApiResource;
+
+
+	/**
      * List of async events posted during this request.
      */
     private List<Object> asyncEventList = Lists.newArrayList();
@@ -99,4 +107,12 @@ public class ThreadLocalContext {
             AppContext.getInstance().getAsyncEventBus().post(asyncEvent);
         }
     }
+    
+    public OpenApiResource getOpenApiResource() {
+		return openApiResource;
+	}
+
+	public void setOpenApiResource(OpenApiResource openApiResource) {
+		this.openApiResource = openApiResource;
+	}
 }
