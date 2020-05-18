@@ -9,6 +9,7 @@ import com.sismics.docs.core.listener.async.*;
 import com.sismics.docs.core.model.jpa.User;
 import com.sismics.docs.core.service.FileService;
 import com.sismics.docs.core.service.InboxService;
+import com.sismics.docs.core.service.TelegramNotificationService;
 import com.sismics.docs.core.util.PdfUtil;
 import com.sismics.docs.core.util.indexing.IndexingHandler;
 import com.sismics.util.ClasspathScanner;
@@ -63,6 +64,9 @@ public class AppContext {
      * File service.
      */
     private FileService fileService;
+    
+    
+    private TelegramNotificationService telegramService;
 
     /**
      * Asynchronous executors.
@@ -100,6 +104,11 @@ public class AppContext {
         inboxService = new InboxService();
         inboxService.startAsync();
         inboxService.awaitRunning();
+        
+        //Start telegram Service
+        telegramService = new TelegramNotificationService();
+        telegramService.startAsync();
+        telegramService.awaitRunning();
 
         // Register fonts
         PdfUtil.registerFonts();
@@ -143,6 +152,7 @@ public class AppContext {
         asyncEventBus.register(new AclCreatedAsyncListener());
         asyncEventBus.register(new AclDeletedAsyncListener());
         asyncEventBus.register(new WebhookAsyncListener());
+        asyncEventBus.register(new TelegramNotificationAyncListerner());
 
         mailEventBus = newAsyncEventBus();
         mailEventBus.register(new PasswordLostAsyncListener());
@@ -211,6 +221,10 @@ public class AppContext {
     public FileService getFileService() {
         return fileService;
     }
+    
+    public TelegramNotificationService getTelegramNotificationService() {
+    	return telegramService;
+    }
 
     public void shutDown() {
         for (ExecutorService executor : asyncExecutorList) {
@@ -234,6 +248,10 @@ public class AppContext {
 
         if (fileService != null) {
             fileService.stopAsync();
+        }
+        
+        if (telegramService != null) {
+        	telegramService.stopAsync();
         }
 
         instance = null;
