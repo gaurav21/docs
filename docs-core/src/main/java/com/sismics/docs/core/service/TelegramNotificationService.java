@@ -116,7 +116,7 @@ public class TelegramNotificationService extends AbstractScheduledService {
 		TransactionUtil.handle(() -> {
 			log.info("Searching for telegram notifications");
 	    	// Create your bot passing the token received from @BotFather
-	    	TelegramBot bot = new TelegramBot("1130998456:AAEbpiy8g3L8OopWD-DLcpT5eUQeZwkRoig");
+	    	TelegramBot bot = new TelegramBot("");
 	    	bot.setUpdatesListener(updates -> {
 	    	    // ... process updates
     	        if (updates != null) {
