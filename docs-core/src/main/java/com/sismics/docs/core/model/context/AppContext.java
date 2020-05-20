@@ -106,9 +106,9 @@ public class AppContext {
         inboxService.awaitRunning();
         
         //Start telegram Service
-        telegramService = new TelegramNotificationService();
-        telegramService.startAsync();
-        telegramService.awaitRunning();
+//        telegramService = new TelegramNotificationService();
+//        telegramService.startAsync();
+//        telegramService.awaitRunning();
 
         // Register fonts
         PdfUtil.registerFonts();
