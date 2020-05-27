@@ -124,7 +124,7 @@ public class InboxService extends AbstractScheduledService {
 		                    log.info(messages.length + " messages found tag - " + subject[0] + '~' + subject[1]);
 		                    for (Message message : messages) {
 		                    	if (StringUtils.lowerCase(message.getSubject()).contains(StringUtils.lowerCase(subject[0]))) {
-			                        importMessage(message, subject[1]);
+			                        importMessage(message, subject[1], user);
 			                        lastSyncMessageCount++;
 		                    	}
 		                    }
@@ -133,7 +133,7 @@ public class InboxService extends AbstractScheduledService {
                     	 Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
                          log.info(messages.length + " messages found");
                          for (Message message : messages) {
-                             importMessage(message, null);
+                             importMessage(message, null, user);
                              lastSyncMessageCount++;
                          }
                     }
@@ -217,7 +217,7 @@ public class InboxService extends AbstractScheduledService {
         properties.setProperty("mail.imap.socketFactory.fallback", "true");
         properties.setProperty("mail.imap.socketFactory.port", user.getInboxPort());
         properties.setProperty("mail.imaps.auth", "true");
-        //properties.setProperty("mail.debug", "true");
+     //   properties.setProperty("mail.debug", "true");
         if (isSsl) {
             properties.put("mail.imaps.connectiontimeout", 30000);
             properties.put("mail.imaps.timeout", 30000);
@@ -247,7 +247,7 @@ public class InboxService extends AbstractScheduledService {
      * @param message Message
      * @throws Exception e
      */
-    private void importMessage(Message message, String tagName) throws Exception {
+    private void importMessage(Message message, String tagName, UserDto user) throws Exception {
         log.info("Importing message: " + message.getSubject());
 
         // Parse the mail
@@ -267,8 +267,10 @@ public class InboxService extends AbstractScheduledService {
         Document document = new Document();
         
         //fetch the user with the email linked to this account
-        UserDao userDao = new UserDao();
-        User user = userDao.getActiveByEmail(ConfigUtil.getConfigStringValue(ConfigType.INBOX_USERNAME));
+//        UserDao userDao = new UserDao();
+//        log.debug(message.getFrom().toString() + " ~~~~~ ");
+         
+       // User user = userDao.getActiveByEmail(ConfigUtil.getConfigStringValue(ConfigType.INBOX_USERNAME));
         if (user != null) {
         	document.setUserId(user.getId());
         } else {

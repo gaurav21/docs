@@ -48,13 +48,13 @@
   <div class="form-group">
     <label class="col-sm-2 control-label" for="inboxTag">{{ 'settings.inbox.tag' | translate }}</label>
     <div class="col-sm-7">
-      <!-- <select class="form-control" ng-model="inbox.tag" id="inboxTag">
+       <select class="form-control" ng-model="inbox.tag" id="inboxTag">
         <option value=""></option>
         <option ng-repeat="tag0 in tags"
                 ng-if="tag0.id != tag.id"
                 ng-selected="inbox.tag == tag0.id"
                 value="{{ tag0.id }}">{{ tag0.name }}</option>
-      </select> -->
+      </select>
       <table class="table" ng-show="entries">
       <thead>
         <tr>
